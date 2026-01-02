@@ -1,3 +1,12 @@
 spring:
   application:
     name: neuro-wallet
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/neuro_wallet
+    username: root
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update # Automatically creates tables for you
+    show-sql: true # Helpful for debugging during the demo
