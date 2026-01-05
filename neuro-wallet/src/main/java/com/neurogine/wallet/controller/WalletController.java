@@ -1,5 +1,6 @@
 package com.neurogine.wallet.controller;
 
+import com.neurogine.wallet.dto.TransferRequest;
 import com.neurogine.wallet.service.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +12,7 @@ public class WalletController {
     @Autowired private WalletService walletService;
 
     @PostMapping("/transfer")
-    public String transfer(@RequestParam Long from, @RequestParam Long to, @RequestParam Double amount) {
-        return walletService.transfer(from, to, amount);
+    public String transfer(@RequestBody TransferRequest request) {
+        return walletService.transfer(request.getFromWalletId(), request.getToWalletId(), request.getAmount());
     }
 }
