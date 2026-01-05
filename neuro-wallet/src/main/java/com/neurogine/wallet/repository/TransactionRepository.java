@@ -1,18 +1,6 @@
-package com.neurogine.wallet.entity;
+package com.neurogine.wallet.repository;
+import com.neurogine.wallet.entity.TransactionRecord;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import java.time.LocalDateTime;
-
-@Entity
-@Data
-public class TransactionRecord {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    private Long senderId;
-    private Long receiverId;
-    private Double amount;
-    private LocalDateTime timestamp;
+public interface TransactionRepository extends JpaRepository<TransactionRecord, Long> {
 }
