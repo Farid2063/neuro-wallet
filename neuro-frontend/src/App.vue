@@ -1,5 +1,40 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import { ref } from 'vue';
+import axios from 'axios';
+import HelloWorld from './components/HelloWorld.vue';
+
+// State variables
+const user = ref(null);
+const authForm = ref({ username: '', password: '' });
+const balance = ref(0); // Renamed from walletBalance to match the template
+const recipientId = ref('');
+const amount = ref(0);
+
+// Authentication logic
+const login = async () => {
+  try {
+    const res = await axios.post('http://localhost:8080/api/auth/login', authForm.value);
+    user.value = res.data;
+    // Note: You should fetch the actual wallet balance here after a successful login
+  } catch (error) {
+    console.error("Login failed:", error);
+  }
+};
+
+// Transfer logic
+const handleTransfer = async () => {
+  try {
+    await axios.post('http://localhost:8080/api/wallet/transfer', {
+      fromUserId: user.value.id,
+      toUserId: recipientId.value,
+      amount: amount.value
+    });
+    alert('Transfer Successful!');
+  } catch (error) {
+    alert('Transfer Failed');
+    console.error(error);
+  }
+};
 </script>
 
 <template>
@@ -24,32 +59,10 @@ import HelloWorld from './components/HelloWorld.vue'
           </button>
         </div>
       </div>
+
+      <div v-else class="text-center text-slate-500">
+        Please log in to manage your wallet.
       </div>
+    </div>
   </div>
 </template>
-
-<script setup>
-import { ref } from 'vue';
-import axios from 'axios';
-
-const user = ref(null);
-const authForm = ref({ username: '', password: '' });
-const walletBalance = ref(0);
-const recipientId = ref('');
-const amount = ref(0);
-
-const login = async () => {
-  const res = await axios.post('http://localhost:8080/api/auth/login', authForm.value);
-  user.value = res.data;
-  // Fetch wallet after login...
-};
-
-const handleTransfer = async () => {
-  await axios.post('http://localhost:8080/api/wallet/transfer', {
-    fromUserId: user.value.id,
-    toUserId: recipientId.value,
-    amount: amount.value
-  });
-  alert('Transfer Successful!');
-};
-</script>
