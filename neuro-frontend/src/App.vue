@@ -3,24 +3,28 @@ import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
-  <div id="app" style="padding: 20px; font-family: sans-serif;">
-    <h1>Neuro-Wallet Dashboard</h1>
-    
-    <div style="background: #f4f4f4; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-      <h3>My Balance</h3>
-      <p style="font-size: 24px; font-weight: bold;">RM {{ balance }}</p>
-    </div>
+  <div class="min-h-screen bg-slate-50 p-8 font-sans">
+    <div class="max-w-md mx-auto bg-white rounded-2xl shadow-xl p-6 border border-slate-100">
+      <h1 class="text-2xl font-bold text-teal-700 mb-6">Neuro-Wallet</h1>
+      
+      <div v-if="user">
+        <div class="bg-teal-50 p-4 rounded-xl mb-6">
+          <p class="text-sm text-teal-600 font-medium">Available Balance</p>
+          <p class="text-3xl font-mono font-bold text-teal-900">RM {{ balance.toFixed(2) }}</p>
+        </div>
 
-    <div style="border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
-      <h3>Transfer Money</h3>
-      <input v-model="recipientId" placeholder="Recipient User ID" type="number" /><br><br>
-      <input v-model="amount" placeholder="Amount (RM)" type="number" /><br><br>
-      <button @click="handleTransfer" style="background: #007bff; color: white; padding: 10px 20px; border: none; cursor: pointer;">
-        Send Money
-      </button>
-    </div>
-    
-    <p v-if="message" style="margin-top: 20px; color: green;">{{ message }}</p>
+        <div class="space-y-4">
+          <input v-model="recipientId" type="number" placeholder="Recipient ID" 
+                 class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none" />
+          <input v-model="amount" type="number" placeholder="Amount (RM)" 
+                 class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none" />
+          <button @click="handleTransfer" 
+                  class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 rounded-lg transition duration-200">
+            Send Money
+          </button>
+        </div>
+      </div>
+      </div>
   </div>
 </template>
 
@@ -28,23 +32,24 @@ import HelloWorld from './components/HelloWorld.vue'
 import { ref } from 'vue';
 import axios from 'axios';
 
-const balance = ref(1000.00); // Temporary starting balance
+const user = ref(null);
+const authForm = ref({ username: '', password: '' });
+const walletBalance = ref(0);
 const recipientId = ref('');
 const amount = ref(0);
-const message = ref('');
+
+const login = async () => {
+  const res = await axios.post('http://localhost:8080/api/auth/login', authForm.value);
+  user.value = res.data;
+  // Fetch wallet after login...
+};
 
 const handleTransfer = async () => {
-  try {
-    // This calls the Backend API we built in Spring Boot
-    const response = await axios.post('http://localhost:8080/api/wallet/transfer', {
-      fromUserId: 1, // Static for demo
-      toUserId: recipientId.value,
-      amount: amount.value
-    });
-    message.value = "Success: " + response.data;
-    balance.value -= amount.value;
-  } catch (error) {
-    message.value = "Error: " + error.response.data;
-  }
+  await axios.post('http://localhost:8080/api/wallet/transfer', {
+    fromUserId: user.value.id,
+    toUserId: recipientId.value,
+    amount: amount.value
+  });
+  alert('Transfer Successful!');
 };
 </script>
