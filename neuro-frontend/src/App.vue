@@ -73,12 +73,13 @@ const register = async () => {
 const fetchWalletData = async () => {
   if (!user.value) return;
   try {
+    // Fetch actual balance from database
+    const balanceRes = await axios.get(`http://localhost:8080/api/wallet/balance/${user.value.id}`);
+    balance.value = balanceRes.data;
+    
+    // Fetch transaction history
     const historyRes = await axios.get(`http://localhost:8080/api/wallet/history/${user.value.id}`);
     transactions.value = historyRes.data;
-    
-    const debits = transactions.value.filter(t => t.senderId === user.value.id).reduce((s, t) => s + t.amount, 0);
-    const credits = transactions.value.filter(t => t.receiverId === user.value.id).reduce((s, t) => s + t.amount, 0);
-    balance.value = 1000 - debits + credits;
   } catch (error) {
     console.error("DATA_SYNC_ERROR", error);
   }

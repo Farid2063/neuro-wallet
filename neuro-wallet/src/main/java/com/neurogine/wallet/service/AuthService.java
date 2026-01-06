@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
-    @Autowired private UserRepository userRepo;
-    @Autowired private WalletRepository walletRepo;
+    @Autowired
+    private UserRepository userRepo;
+    @Autowired
+    private WalletRepository walletRepo;
 
     public User registerUser(String username, String password) {
         if (userRepo.findByUsername(username).isPresent()) {
@@ -21,10 +23,10 @@ public class AuthService {
         newUser.setPassword(password); // In production, hash the password!
         User savedUser = userRepo.save(newUser);
 
-        // Create a wallet for the new user
+        // Create a wallet for the new user with starting balance
         Wallet wallet = new Wallet();
         wallet.setUserId(savedUser.getId());
-        wallet.setBalance(0.0);
+        wallet.setBalance(1000.0); // Starting balance of 1000 RM
         walletRepo.save(wallet);
 
         return savedUser;
