@@ -13,18 +13,27 @@ import com.neurogine.wallet.service.AuthService;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin("* ")
+@CrossOrigin("origins = http://localhost:5173")
 public class AuthController {
     @Autowired private AuthService authService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
-        // temporary: return OK until AuthService.register(User) is implemented
-        return ResponseEntity.ok().build();
+        try{
+            User registered = authService.registerUser(user.getUsername(), user.getPassword());
+            return ResponseEntity.ok(registered);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User user) {
-        return ResponseEntity.ok(authService.login(user.getUsername(), user.getPassword()));
+        try {
+            User loggedIn = authService.login(user.getUsername(), user.getPassword());
+            return ResponseEntity.ok(loggedIn);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(401).body(e.getMessage());
+        }
     }
 }
